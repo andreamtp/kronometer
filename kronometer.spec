@@ -21,7 +21,8 @@ URL:     https://userbase.kde.org/Kronometer
 %else
 %global stable stable
 %endif
-Source0: http://download.kde.org/%{stable}/applications/%{version}/src/%{name}-%{version}.tar.xz
+Source0: https://download.kde.org/%{stable}/%{name}/%{version}/src/%{name}-%{version}.tar.xz
+
 
 BuildRequires: desktop-file-utils
 BuildRequires: libappstream-glib

@@ -9,7 +9,7 @@
 Name:    kronometer
 Summary: A stopwatch application by KDE
 Version: 2.2.3
-Release: 0%{?dist}
+Release: 1%{?dist}
 
 # code (generally) GPLv2, docs GFDL
 License: GPLv2 and GFDL
@@ -26,20 +26,20 @@ Source0: https://download.kde.org/%{stable}/%{name}/%{version}/src/%{name}-%{ver
 
 BuildRequires: desktop-file-utils
 BuildRequires: libappstream-glib
-BuildRequires:  extra-cmake-modules
+BuildRequires: extra-cmake-modules
 
-BuildRequires:  cmake(Qt5Core) >= 5.9.0
-BuildRequires:  cmake(Qt5Gui)
-BuildRequires:  cmake(Qt5Test)
-BuildRequires:  cmake(Qt5Widgets)
+BuildRequires: cmake(Qt5Core) >= 5.9.0
+BuildRequires: cmake(Qt5Gui)
+BuildRequires: cmake(Qt5Test)
+BuildRequires: cmake(Qt5Widgets)
 
 # kf5
-BuildRequires:  cmake(KF5Config)
-BuildRequires:  cmake(KF5Crash)
-BuildRequires:  cmake(KF5DocTools)
-BuildRequires:  cmake(KF5I18n)
-BuildRequires:  cmake(KF5WidgetsAddons)
-BuildRequires:  cmake(KF5XmlGui)
+BuildRequires: cmake(KF5Config)
+BuildRequires: cmake(KF5Crash)
+BuildRequires: cmake(KF5DocTools)
+BuildRequires: cmake(KF5I18n)
+BuildRequires: cmake(KF5WidgetsAddons)
+BuildRequires: cmake(KF5XmlGui)
 
 %if 0%{?tests}
 BuildRequires: dbus-x11
@@ -91,6 +91,6 @@ make test ARGS="--output-on-failure --timeout 20" -C %{_target_platform} ||:
 %{_mandir}/*/man1/kronometer.1*
 
 %changelog
-* Sat May 2 2020 aperotti@redhat.com - 2.2.3-0
+* Sat May 2 2020 Andrea Perotti <aperotti@redhat.com> - 2.2.3-1
 - first attempt
   

@@ -9,7 +9,7 @@
 Name:    kronometer
 Summary: A stopwatch application by KDE
 Version: 2.2.3
-Release: 1%{?dist}
+Release: 2%{?dist}
 
 # code (generally) GPLv2, docs GFDL
 License: GPLv2 and GFDL
@@ -54,24 +54,21 @@ Kronometer is a stopwatch application.
 
 
 %build
-mkdir %{_target_platform}
-pushd %{_target_platform}
-%{cmake_kf5} .. \
+%{cmake_kf5} \
   -DBUILD_TESTING:BOOL=%{?tests:ON}%{!?tests:OFF}
-popd
 
-%make_build -C %{_target_platform}
+%cmake_build
 
 
 %install
-make install/fast DESTDIR=%{buildroot} -C %{_target_platform}
+%cmake_install
 
-%find_lang %{name} --all-name --with-html
+%find_lang %{name} --all-name --with-html --with-man
 
 
 %check
-desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/org.kde.%{name}.desktop
-appstream-util validate-relax --nonet %{buildroot}%{_kf5_metainfodir}/org.kde.%{name}.appdata.xml
+desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/org.kde.%{name}.desktop ||:
+appstream-util validate-relax --nonet %{buildroot}%{_kf5_metainfodir}/org.kde.%{name}.appdata.xml ||:
 %if 0%{?tests}
 export CTEST_OUTPUT_ON_FAILURE=1
 xvfb-run -a \
@@ -91,6 +88,9 @@ make test ARGS="--output-on-failure --timeout 20" -C %{_target_platform} ||:
 %{_mandir}/*/man1/kronometer.1*
 
 %changelog
+* Tue Aug 17 2021 Andrea Perotti <aperotti@redhat.com> - 2.2.3-2
+- spec cleanup and rebuild for Fedora 34/35
+
 * Sat May 2 2020 Andrea Perotti <aperotti@redhat.com> - 2.2.3-1
 - first attempt
   

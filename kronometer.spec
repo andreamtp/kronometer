@@ -1,18 +1,11 @@
-# uncomment to enable bootstrap mode
-%global bootstrap 1
-
-%if !0%{?bootstrap}
-%global tests 1
-%endif
-
+%bcond tests 1
 
 Name:    kronometer
 Summary: A stopwatch application by KDE
-Version: 2.2.3
-Release: 2%{?dist}
+Version: 2.3.0
+Release: 1%{?dist}
 
-# code (generally) GPLv2, docs GFDL
-License: GPLv2 and GFDL
+License: GPL-2.0-or-later AND CC0-1.0 AND GFDL
 URL:     https://userbase.kde.org/Kronometer
 
 %global revision %(echo %{version} | cut -d. -f3)
@@ -22,13 +15,16 @@ URL:     https://userbase.kde.org/Kronometer
 %global stable stable
 %endif
 Source0: https://download.kde.org/%{stable}/%{name}/%{version}/src/%{name}-%{version}.tar.xz
-
+Source1: https://download.kde.org/%{stable}/%{name}/%{version}/src/%{name}-%{version}.tar.xz.sig
+Source2: gpgkey-F07D85CAA18ACF46A346FD017C7FC6EA8633B4EA.gpg
 
 BuildRequires: desktop-file-utils
-BuildRequires: libappstream-glib
 BuildRequires: extra-cmake-modules
+BuildRequires: gcc-c++
+BuildRequires: gnupg2
+BuildRequires: libappstream-glib
 
-BuildRequires: cmake(Qt5Core) >= 5.9.0
+BuildRequires: cmake(Qt5Core) >= 5.15.0
 BuildRequires: cmake(Qt5Gui)
 BuildRequires: cmake(Qt5Test)
 BuildRequires: cmake(Qt5Widgets)
@@ -41,15 +37,20 @@ BuildRequires: cmake(KF5I18n)
 BuildRequires: cmake(KF5WidgetsAddons)
 BuildRequires: cmake(KF5XmlGui)
 
-%if 0%{?tests}
+%if %{with tests}
 BuildRequires: dbus-x11
 BuildRequires: xorg-x11-server-Xvfb
 %endif
 
+Requires: kde-filesystem
+Requires: hicolor-icon-theme
+
 %description
 Kronometer is a stopwatch application.
 
+
 %prep
+%{gpgverify} --keyring='%{SOURCE2}' --signature='%{SOURCE1}' --data='%{SOURCE0}'
 %autosetup -p1
 
 
@@ -67,30 +68,23 @@ Kronometer is a stopwatch application.
 
 
 %check
-desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/org.kde.%{name}.desktop ||:
-appstream-util validate-relax --nonet %{buildroot}%{_kf5_metainfodir}/org.kde.%{name}.appdata.xml ||:
-%if 0%{?tests}
-export CTEST_OUTPUT_ON_FAILURE=1
-xvfb-run -a \
-dbus-launch --exit-with-session \
-make test ARGS="--output-on-failure --timeout 20" -C %{_target_platform} ||:
+desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/org.kde.%{name}.desktop
+appstream-util validate-relax --nonet %{buildroot}%{_kf5_metainfodir}/org.kde.%{name}.appdata.xml
+%if %{with tests}
+%ctest --verbose
+# --exclude-regex testtimedisplay
 %endif
 
 
 %files -f %{name}.lang
-%license COPYING*
+%license LICENSES/GPL-2.0-or-later.txt LICENSES/CC0-1.0.txt
 %{_kf5_datadir}/applications/org.kde.kronometer.desktop
 %{_kf5_bindir}/kronometer
 %{_kf5_datadir}/config.kcfg/kronometer.kcfg
 %{_kf5_metainfodir}/org.kde.kronometer.appdata.xml
 %{_kf5_datadir}/icons/hicolor/*/apps/kronometer.*
 %{_mandir}/man1/kronometer.1*
-%{_mandir}/*/man1/kronometer.1*
 
 %changelog
-* Tue Aug 17 2021 Andrea Perotti <aperotti@redhat.com> - 2.2.3-2
-- spec cleanup and rebuild for Fedora 34/35
-
-* Sat May 2 2020 Andrea Perotti <aperotti@redhat.com> - 2.2.3-1
-- first attempt
-  
+* Mon Apr 17 2023 Andrea Perotti <aperotti@redhat.com> - 2.3.0-1
+- Initial build

@@ -5,7 +5,7 @@ Summary: A stopwatch application by KDE
 Version: 2.3.0
 Release: 1%{?dist}
 
-License: GPL-2.0-or-later AND CC0-1.0 AND GFDL
+License: GPL-2.0-or-later AND CC0-1.0
 URL:     https://userbase.kde.org/Kronometer
 
 %global revision %(echo %{version} | cut -d. -f3)
@@ -26,7 +26,6 @@ BuildRequires: libappstream-glib
 
 BuildRequires: cmake(Qt5Core) >= 5.15.0
 BuildRequires: cmake(Qt5Gui)
-BuildRequires: cmake(Qt5Test)
 BuildRequires: cmake(Qt5Widgets)
 
 # kf5
@@ -38,8 +37,9 @@ BuildRequires: cmake(KF5WidgetsAddons)
 BuildRequires: cmake(KF5XmlGui)
 
 %if %{with tests}
-BuildRequires: dbus-x11
-BuildRequires: xorg-x11-server-Xvfb
+BuildRequires: cmake(Qt5Test)
+#BuildRequires: dbus-x11
+#BuildRequires: xorg-x11-server-Xvfb
 %endif
 
 Requires: kde-filesystem
@@ -56,7 +56,7 @@ Kronometer is a stopwatch application.
 
 %build
 %{cmake_kf5} \
-  -DBUILD_TESTING:BOOL=%{?tests:ON}%{!?tests:OFF}
+  -DBUILD_TESTING:BOOL=%{?with_tests:ON}%{!?with_tests:OFF}
 
 %cmake_build
 
@@ -71,8 +71,8 @@ Kronometer is a stopwatch application.
 desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/org.kde.%{name}.desktop
 appstream-util validate-relax --nonet %{buildroot}%{_kf5_metainfodir}/org.kde.%{name}.appdata.xml
 %if %{with tests}
-%ctest --verbose
-# --exclude-regex testtimedisplay
+#% ctest --verbose
+%ctest --verbose --exclude-regex testtimedisplay
 %endif
 
 
